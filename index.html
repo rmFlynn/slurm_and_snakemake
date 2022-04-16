@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Snake and Slurm</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/solarized.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section data-background="./media/museums-victoria-G9Yy-iitjjg-unsplash.jpg">
+					<div style="position: absolute; width: 90%; right: 0; box-shadow: 0 1px 4px rgba(0,0,0,0.5), 0 5px 25px rgba(0,0,0,0.2); background-color: rgba(255, 246, 237, 0.9); padding: 20px; font-size: 40px; text-align: left;">
+                                        <h2>Getting started with Snakemake</h1>
+					</div>
+				</section>
+				<section  style="text-align: left;">
+                                        <h3>Slurm Config for Snakemake</h3>
+<p><span style="font-size:0.5em">For general slurm scripts to work for you, a config file must live in your home directory AKA '~'. I sugest you make this file `~/.config/snakemake/slurm/config.yaml` and put this code in it....</span></p>
+
+<div class="sl-block" data-block-type="code" style="width: 944px; height: 571px; left: 330px; top: 165px;" data-name="code-867fe8" data-block-id="269290143a6caffbf0f62c446ba0f6c8"><div class="sl-block-content notranslate" data-highlight-theme="monokai" data-code-frame="none" style="z-index: 13;"><pre style="font-size: 11px; line-height: 19px;"><code  data-fragment-index="0">
+cluster:
+  mkdir -p logs/{rule} &amp;&amp; # your slurm logs will go here
+  sbatch # You should not need to touch this section
+    --partition={resources.partition}
+    --ntasks={threads}
+    --mem={resources.mem}
+    --job-name=smk-{rule}-{wildcards}
+    --output=logs/{rule}/{rule}-{wildcards}-%j.out
+    --mail-type={resources.mail_type}
+    --mail-user={resources.mail_user}
+    # --nodelist="zenith" # If this is set things will run only on zenith
+default-resources: # These are defaults, snakemake will overide them, so they should be low
+  - partition=wrighton-hi,wrighton-low # Default partition for your lab or debug for me
+  - ntasks=1
+  - node=1
+  - mem=100
+  - time="01:00:00"
+  - time="01:00:00"
+  - mail_user="&lt;your email&gt;@colostate.edu" # set your email
+  - mail_type="begin,end,fail"
+# Defaults for Snakemake, not Slurm
+restart-times: 0 # number of times to restart failing jobs (default 0)
+max-jobs-per-second: 5 # max_jobs_per_second
+max-status-checks-per-second: 1 # How ofthen the run is checked
+local-cores: 1 #  the number of provided local cores if in cluster mode (ignored without cluster support) (default 1)
+jobs: 1
+latency-wait: 60
+keep-going: False
+rerun-incomplete: False
+printshellcmds: True
+scheduler: greedy
+use-conda: True # You don't need to install conda
+conda-prefix: '~/snake_conda_env'
+</code></pre></div></div>
+				</section>
+				<section  style="text-align: left;">
+                                        <h3>Slurm Config for Snakemake</h3>
+<p><span style="font-size:0.5em">If you are on zenith, run </span></p>
+
+<div class="sl-block" data-block-type="code" style="width: 944px; height: 571px; left: 330px; top: 165px;" data-name="code-867fe8" data-block-id="269290143a6caffbf0f62c446ba0f6c8"><div class="sl-block-content notranslate" data-highlight-theme="monokai" data-code-frame="none" style="z-index: 13;"><pre style="font-size: 11px; line-height: 19px;"><code data-fragment-index="0">
+cp /home/projects-wrighton-2/projects-flynn/Snakemake_Slurm_RMNP_Example/slurm_and_snake_make/example_config.yaml `~/.config/snakemake/slurm/config.yaml
+</code></pre></div></div>
+				</section>
+				<section  style="text-align: left;">
+                                        <h3>Slurm Config for Snakemake</h3>
+<p><span style="font-size:0.5em">
+Once you have the file you need to add your email on line 20
+</span></p>
+
+<div class="sl-block" data-block-type="code" style="width: 944px; height: 571px; left: 330px; top: 165px;" data-name="code-867fe8" data-block-id="269290143a6caffbf0f62c446ba0f6c8"><div class="sl-block-content notranslate" data-highlight-theme="monokai" data-code-frame="none" style="z-index: 13;"><pre style="font-size: 11px; line-height: 19px;"><code data-line-numbers="20" data-fragment-index="0">
+cluster:
+  mkdir -p logs/{rule} &amp;&amp; # your slurm logs will go here
+  sbatch # You should not need to touch this section
+    --partition={resources.partition}
+    --ntasks={threads}
+    --mem={resources.mem}
+    --job-name=smk-{rule}-{wildcards}
+    --output=logs/{rule}/{rule}-{wildcards}-%j.out
+    --mail-type={resources.mail_type}
+    --mail-user={resources.mail_user}
+    # --nodelist="zenith" # If this is set things will run only on zenith
+default-resources: # These are defaults, snakemake will overide them, so they should be low
+  - partition=wrighton-hi,wrighton-low # Default partition for your lab or debug for me
+  - ntasks=1
+  - node=1
+  - mem=100
+  - time="01:00:00"
+  - time="01:00:00"
+  - mail_user="&lt;your email&gt;@colostate.edu" # set your email
+  - mail_type="begin,end,fail"
+# Defaults for Snakemake, not Slurm
+restart-times: 0 # number of times to restart failing jobs (default 0)
+max-jobs-per-second: 5 # max_jobs_per_second
+max-status-checks-per-second: 1 # How ofthen the run is checked
+local-cores: 1 #  the number of provided local cores if in cluster mode (ignored without cluster support) (default 1)
+jobs: 1
+latency-wait: 60
+keep-going: False
+rerun-incomplete: False
+printshellcmds: True
+scheduler: greedy
+use-conda: True # You don't need to install conda
+conda-prefix: '~/snake_conda_env'
+</code></pre></div></div>
+				</section>
+				<section  style="text-align: left;">
+                                        <h3>Slurm Config for Snakemake</h3>
+<p><span style="font-size:0.5em">
+Change the partition if you need to
+</span></p>
+
+<div class="sl-block" data-block-type="code" style="width: 944px; height: 571px; left: 330px; top: 165px;" data-name="code-867fe8" data-block-id="269290143a6caffbf0f62c446ba0f6c8"><div class="sl-block-content notranslate" data-highlight-theme="monokai" data-code-frame="none" style="z-index: 13;"><pre style="font-size: 11px; line-height: 19px;"><code data-line-numbers="14" data-fragment-index="0">
+cluster:
+  mkdir -p logs/{rule} &amp;&amp; # your slurm logs will go here
+  sbatch # You should not need to touch this section
+    --partition={resources.partition}
+    --ntasks={threads}
+    --mem={resources.mem}
+    --job-name=smk-{rule}-{wildcards}
+    --output=logs/{rule}/{rule}-{wildcards}-%j.out
+    --mail-type={resources.mail_type}
+    --mail-user={resources.mail_user}
+    # --nodelist="zenith" # If this is set things will run only on zenith
+default-resources: # These are defaults, snakemake will overide them, so they should be low
+  - partition=wrighton-hi,wrighton-low # Default partition for your lab or debug for me
+  - ntasks=1
+  - node=1
+  - mem=100
+  - time="01:00:00"
+  - time="01:00:00"
+  - mail_user="&lt;your email&gt;@colostate.edu" # set your email
+  - mail_type="begin,end,fail"
+# Defaults for Snakemake, not Slurm
+restart-times: 0 # number of times to restart failing jobs (default 0)
+max-jobs-per-second: 5 # max_jobs_per_second
+max-status-checks-per-second: 1 # How ofthen the run is checked
+local-cores: 1 #  the number of provided local cores if in cluster mode (ignored without cluster support) (default 1)
+jobs: 1
+latency-wait: 60
+keep-going: False
+rerun-incomplete: False
+printshellcmds: True
+scheduler: greedy
+use-conda: True # You don't need to install conda
+conda-prefix: '~/snake_conda_env'
+</code></pre></div></div>
+				</section>
+
+				<section  style="text-align: left;">
+                                        <h3>Slurm Config for Snakemake</h3>
+<p><span style="font-size:0.5em">
+        Note this section, you can overide these variables in your slurm jobs
+</span></p>
+
+<div class="sl-block" data-block-type="code" style="width: 944px; height: 571px; left: 330px; top: 165px;" data-name="code-867fe8" data-block-id="269290143a6caffbf0f62c446ba0f6c8"><div class="sl-block-content notranslate" data-highlight-theme="monokai" data-code-frame="none" style="z-index: 13;"><pre style="font-size: 11px; line-height: 19px;"><code data-line-numbers="4-12"  data-fragment-index="0">
+cluster:
+  mkdir -p logs/{rule} &amp;&amp; # your slurm logs will go here
+  sbatch # You should not need to touch this section
+    --partition={resources.partition}
+    --ntasks={threads}
+    --mem={resources.mem}
+    --job-name=smk-{rule}-{wildcards}
+    --output=logs/{rule}/{rule}-{wildcards}-%j.out
+    --mail-type={resources.mail_type}
+    --mail-user={resources.mail_user}
+    # --nodelist="zenith" # If this is set things will run only on zenith
+default-resources: # These are defaults, snakemake will overide them, so they should be low
+  - partition=wrighton-hi,wrighton-low # Default partition for your lab or debug for me
+  - ntasks=1
+  - node=1
+  - mem=100
+  - time="01:00:00"
+  - time="01:00:00"
+  - mail_user="&lt;your email&gt;@colostate.edu" # set your email
+  - mail_type="begin,end,fail"
+# Defaults for Snakemake, not Slurm
+restart-times: 0 # number of times to restart failing jobs (default 0)
+max-jobs-per-second: 5 # max_jobs_per_second
+max-status-checks-per-second: 1 # How ofthen the run is checked
+local-cores: 1 #  the number of provided local cores if in cluster mode (ignored without cluster support) (default 1)
+jobs: 1
+latency-wait: 60
+keep-going: False
+rerun-incomplete: False
+printshellcmds: True
+scheduler: greedy
+use-conda: True # You don't need to install conda
+conda-prefix: '~/snake_conda_env'
+</code></pre></div></div>
+
+				</section>
+
+				<section  style="text-align: left;">
+                                        <h3>Slurm Config for Snakemake</h3>
+<p><span style="font-size:0.5em">
+
+Some variables are comuted, like the job name and the number of cores but some varibles are set, here:
+</span></p>
+
+<div class="sl-block" data-block-type="code" style="width: 944px; height: 571px; left: 330px; top: 165px;" data-name="code-867fe8" data-block-id="269290143a6caffbf0f62c446ba0f6c8"><div class="sl-block-content notranslate" data-highlight-theme="monokai" data-code-frame="none" style="z-index: 13;"><pre style="font-size: 11px; line-height: 19px;"><code data-line-numbers="10-12"  data-fragment-index="0">
+rule bbduk_trim_reads:
+    input:
+        r1=lambda w: sample_dict[w.sample]['forward'],
+        r2=lambda w: sample_dict[w.sample]['reversed']
+    output:
+       spath=temp(directory("results/trimmed_reads/{sample}"))
+    threads: 
+        workflow.cores
+    resources:
+        mem=100000, # 100GB
+        time='1-00:00:00'
+    benchmark:
+        "benchmarks/bbduk_trim_reads/{sample}.tsv"
+    shell:
+       """
+       bbduk.sh threads={threads} \\
+           overwrite=t \\
+           in1={input.r1} \\
+           in2={input.r2} \\
+           ktrim=r k=23 mink=11 hdist=1 qtrim=rl trimq=20 minlength=75 \\
+           ref=/opt/bbtools/bbmap/resources/adapters.fa  \\
+           out1={output.spath}/trimmed_R1.fastq \\
+           out2={output.spath}/trimmed_R2.fastq
+       """
+</code></pre></div></div>
+
+				</section>
+				<section  style="text-align: left;">
+                                        <h3>Slurm Config for Snakemake</h3>
+<p><span style="font-size:0.5em">
+
+When you run use -j for the number of jobs and -c for the max number of cores
+</span></p>
+
+<div class="sl-block" data-block-type="code" style="width: 944px; height: 571px; left: 330px; top: 165px;" data-name="code-867fe8" data-block-id="269290143a6caffbf0f62c446ba0f6c8"><div class="sl-block-content notranslate" data-highlight-theme="monokai" data-code-frame="none" style="z-index: 13;"><pre style="font-size: 11px; line-height: 19px;"><code   data-fragment-index="0">
+snakemake --profile slurm -j 3 -c 20 
+</code></pre></div></div>
+
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/zoom/zoom.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/search/search.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+
+			// Also available as an ES module, see:
+			// https://revealjs.com/initialization/
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealZoom, RevealNotes, RevealSearch, RevealMarkdown, RevealHighlight ]
+			});
+
+		</script>
+
+	</body>
+</html>
